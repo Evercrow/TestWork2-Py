@@ -4,9 +4,11 @@ class Menu:
 
     def intro(self):
         print("Вы открыли утилиту заметок")
+        self.help()
+
+    def help(self):
         print("Доступны следующие команды:")
         print('\t help - вывод данной справки')
-        print('\t info - вывод информации о программе')
         print('\t exit - завершение программы')
         print('\t add  - добавить новую заметку')
         print('\t edit - редактировать заметку')
@@ -15,3 +17,18 @@ class Menu:
         print('\t show - вывод одной заметки')
         print('\t filter - фильтрация вывода по дате')
 
+    def com_success(self):
+        print("Команда выполнена успешно")
+
+    def com_error(self, error):
+        print(f"Команду не удалось выполнить, {error}")
+
+
+    def display(self, entry_list):
+        print("--------------------------------------------------------------------")
+        if len(entry_list) <= 1:
+            print(str(entry_list))
+        else:
+            for e in entry_list:
+                print(str(entry_list))
+        print("\n")
