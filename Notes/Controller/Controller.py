@@ -9,6 +9,7 @@ class Controller:
 
     def run(self):
         self.ui.intro()
+        not_saved = False
         while True:
             inp = input('Введите команду: ')
             match inp.lower():
@@ -17,18 +18,42 @@ class Controller:
                 case 'help':
                     self.ui.help()
                 case 'add':
-                    self.core.add_note(input('Введите заголовок: \n'), input('Введите текст заметки: \n'))
+                    not_saved = self.adding_note()
                 case 'edit':
-                    self.core.edit_note()
+                    not_saved = self.editing_note()
                 case 'del':
-                    self.core.remove_note()
+                    not_saved = self.core.remove_note(self.ui.getId())
                 case 'show':
-                    self.core.show_entry(input('Введите ID заметки: \n'))
+                    self.showing_note()
                 case 'filter':
                     self.core.filter_notes()
                 case 'list':
                     self.core.show_all()
-                case 'save' :
+                case 'save':
                     self.core.save_notes()
+                    not_saved = False
                 case _:
-                    self._view.print('Команда не опознана. Для подсказки наберите help')
+                    self.ui.unknown()
+        while not_saved:
+            answer = input("Желаете сохранить изменения? (y/n)\n")
+            if answer == 'y':
+                self.core.save_notes()
+                break
+            elif answer == 'n':
+                print("Файл заметок остался без изменений")
+                break
+            else:
+                print("Повторите ввод")
+        self.ui.outro()
+
+    def adding_note(self):
+        return self.core.add_note(self.ui.getTitle(), self.ui.getBody())
+
+    def editing_note(self):
+        nid = self.ui.getId()
+        print(" \nВы редактируете следующую запись:")
+        self.core.show_entry(nid)
+        return self.core.edit_note(nid)
+
+    def showing_note(self):
+        self.core.show_entry(input('Введите ID заметки: '))

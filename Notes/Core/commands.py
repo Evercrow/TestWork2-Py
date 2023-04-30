@@ -1,3 +1,5 @@
+import datetime
+
 from Notes.Core.Note import Note
 from Notes.Core.filedock import FileDock
 from Notes.UI.Menu import Menu
@@ -13,32 +15,54 @@ class Core:
 
     def add_note(self, title, body):
         entry = Note(title, body)
-        self.notes.update({entry.note_id: entry})
+        self.notes.update({str(entry.note_id): entry})
         self.out.display(entry)
+        return True
 
-    def build_data(self, lines_from_file):
+    def build_data(self, dicts_from_file :list):
         db = {}
-        for l in lines_from_file:
-            db.update({l[0]: Note(l[1], l[2], l[3])})
+        print(dicts_from_file)
+        for d in dicts_from_file:
+            db.update({d['ID']: Note(d['Заголовок'], d['Заметка'], last_change=d['Дата'], note_id=d['ID'])})
+        if len(db) > 0:
+            Note.id_count = int(max(db.keys())) + 1
         return db
 
     def save_notes(self):
         try:
             self.f.write_notes_csv(self.notes)
         except OSError:
-            self.out.com_error("Не удалось записать в файл")
+            self.out.com_error("не удалось записать в файл")
+        return True
 
-    def edit_note(self):
-        pass
+    def edit_note(self, keyid: str):
+        entry = Note(self.out.getTitle(), self.out.getBody(),
+                     note_id=keyid, last_change=datetime.datetime.now())
+        self.notes.update({keyid: entry})
+        self.out.display(entry)
+        return True
 
-    def remove_note(self):
-        pass
+    def remove_note(self, keyid: str):
+        try:
+            self.notes.pop(keyid)
+            return True
+        except KeyError:
+            self.out.com_error("ключ не найден")
+            return False
+        except TypeError:
+            self.out.com_error("ключ должен быть строковым типом")
+            return False
 
     def filter_notes(self):
         pass
 
-    def show_entry(self):
-        pass
+    def show_entry(self, keyid: str):
+        try:
+            self.out.display(self.notes[keyid])
+        except KeyError:
+            self.out.com_error("ключ не найден")
+        except TypeError:
+            self.out.com_error("ключ должен быть строковым типом")
 
     def show_all(self):
-        pass
+        self.out.display(self.notes)

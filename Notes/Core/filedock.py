@@ -3,9 +3,6 @@ import os.path
 import pathlib
 
 
-from Notes.Core.Note import Note
-
-
 class FileDock:
     csv.register_dialect("notes_dialect", delimiter=";", skipinitialspace=True)
     filepath = os.path.join(pathlib.Path().resolve(), r'storage\notes.csv')
@@ -18,12 +15,13 @@ class FileDock:
         возвращает построчный список из рабочего файла
         :return:
         """
-        with open(self.filepath , mode='a+') as csv_file:
+        if os.path.isfile(self.filepath):
+            with open(self.filepath , mode='r') as csv_file:
 
-            csv_reader = csv.reader(csv_file, dialect="notes_dialect")
-            print(type(csv_reader))
-            print(csv_reader)
-            return list(csv_reader)
+                csv_reader = csv.DictReader(csv_file, dialect="notes_dialect")
+                return list(csv_reader)
+        else:
+            return []
 
     def write_notes_csv(self, entry_dict:dict):
         """
@@ -31,15 +29,9 @@ class FileDock:
         :return:
         """
         with open('./storage/notes.csv', mode='w') as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=self.fieldnames)
+            writer = csv.DictWriter(csv_file, fieldnames=self.fieldnames, dialect="notes_dialect")
 
             writer.writeheader()
-            # if len(entry) <= 1:
-            #     writer.writerow({self.fieldnames[0]: entry.note_id,
-            #                      self.fieldnames[1]: entry.title,
-            #                      self.fieldnames[2]: entry.body,
-            #                      self.fieldnames[3]: entry.last_change})
-            # else:
             for en in entry_dict.values():
                 writer.writerow({self.fieldnames[0]: en.note_id,
                                  self.fieldnames[1]: en.title,

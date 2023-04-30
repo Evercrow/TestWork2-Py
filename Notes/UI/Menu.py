@@ -1,3 +1,6 @@
+from Notes.Core.Note import Note
+
+
 class Menu:
     def __init__(self):
         pass
@@ -23,12 +26,28 @@ class Menu:
     def com_error(self, error):
         print(f"Команду не удалось выполнить, {error}")
 
-
-    def display(self, entry_list):
-        print("--------------------------------------------------------------------")
-        if len(entry_list) <= 1:
+    def display(self, entry_list :dict):
+        print("===================================================================")
+        if isinstance(entry_list, Note):
             print(str(entry_list))
         else:
-            for e in entry_list:
-                print(str(entry_list))
+            for e in entry_list.values():
+                print(str(e))
+                print("------------------------------------------")
         print("\n")
+
+
+    def unknown(self):
+        print('Команда не опознана. Для подсказки наберите help')
+
+    def outro(self):
+        print("Программа завершена. Спасибо за использование!")
+
+    def getTitle(self):
+        return input('Введите заголовок:\n')
+
+    def getBody(self):
+        return input('Введите текст заметки:\n')
+
+    def getId(self):
+        return input('Введите ID заметки: ')
