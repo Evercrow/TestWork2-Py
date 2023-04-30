@@ -11,7 +11,7 @@ class Note:
         :param last_change: дата создания/изменения
         """
         if last_change is None:
-            self.last_change = datetime.datetime.now()
+            self.last_change = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         else:
             self.last_change = last_change
         if note_id is None:

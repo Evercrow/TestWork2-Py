@@ -19,9 +19,8 @@ class Core:
         self.out.display(entry)
         return True
 
-    def build_data(self, dicts_from_file :list):
+    def build_data(self, dicts_from_file: list):
         db = {}
-        print(dicts_from_file)
         for d in dicts_from_file:
             db.update({d['ID']: Note(d['Заголовок'], d['Заметка'], last_change=d['Дата'], note_id=d['ID'])})
         if len(db) > 0:
@@ -29,11 +28,16 @@ class Core:
         return db
 
     def save_notes(self):
+        """
+        :return: возвращает флаг False только для not_saved в контроллере, единственный "обратный" метод
+        """
         try:
             self.f.write_notes_csv(self.notes)
+            return False
         except OSError:
             self.out.com_error("не удалось записать в файл")
-        return True
+            return True
+
 
     def edit_note(self, keyid: str):
         entry = Note(self.out.getTitle(), self.out.getBody(),
@@ -45,6 +49,7 @@ class Core:
     def remove_note(self, keyid: str):
         try:
             self.notes.pop(keyid)
+            self.out.com_success()
             return True
         except KeyError:
             self.out.com_error("ключ не найден")
@@ -53,8 +58,6 @@ class Core:
             self.out.com_error("ключ должен быть строковым типом")
             return False
 
-    def filter_notes(self):
-        pass
 
     def show_entry(self, keyid: str):
         try:
@@ -66,3 +69,21 @@ class Core:
 
     def show_all(self):
         self.out.display(self.notes)
+
+    def sort_by_date(self, filtered: dict):
+        """
+        сортировка по возрастанию даты, достигается за счет перегрузки сравнения в объекте Note
+        :return:
+        """
+
+        sorted_dict = dict(sorted(filtered.items(), key=lambda x: x[1]))
+        self.out.display(sorted_dict)
+
+    def filter_by_date(self, start_date=None, to_date=None):
+        if start_date is not None and to_date is not None:
+            filtered_d = {k: v for (k, v) in self.notes.items() if
+                          start_date <= datetime.datetime.strptime(v.last_change, "%Y-%m-%d %H:%M:%S").date() <= to_date
+                          }
+        else:
+            filtered_d = self.notes
+        self.sort_by_date(filtered_d)

@@ -26,12 +26,13 @@ class Controller:
                 case 'show':
                     self.showing_note()
                 case 'filter':
-                    self.core.filter_notes()
+                    self.filtering()
                 case 'list':
                     self.core.show_all()
                 case 'save':
-                    self.core.save_notes()
-                    not_saved = False
+                    not_saved = self.core.save_notes()
+                case 'sort':
+                    self.core.sort_by_date(self.core.notes)
                 case _:
                     self.ui.unknown()
         while not_saved:
@@ -57,3 +58,10 @@ class Controller:
 
     def showing_note(self):
         self.core.show_entry(input('Введите ID заметки: '))
+
+    def filtering(self):
+        print("Введите начальную дату")
+        start = self.ui.getDate()
+        print("Введите конечную дату")
+        end = self.ui.getDate()
+        self.core.filter_by_date(start, end)

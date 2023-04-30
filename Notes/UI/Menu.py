@@ -1,3 +1,5 @@
+import datetime
+
 from Notes.Core.Note import Note
 
 
@@ -19,6 +21,8 @@ class Menu:
         print('\t list - вывод полного списка заметок')
         print('\t show - вывод одной заметки')
         print('\t filter - фильтрация вывода по дате')
+        print('\t sort - сортировка и вывод всех заметок по возрастанию даты')
+        print('\t save  - если хотите записать текущее состояние списка заметок в файл, не выходя из программы')
 
     def com_success(self):
         print("Команда выполнена успешно")
@@ -26,7 +30,7 @@ class Menu:
     def com_error(self, error):
         print(f"Команду не удалось выполнить, {error}")
 
-    def display(self, entry_list :dict):
+    def display(self, entry_list: dict):
         print("===================================================================")
         if isinstance(entry_list, Note):
             print(str(entry_list))
@@ -35,7 +39,6 @@ class Menu:
                 print(str(e))
                 print("------------------------------------------")
         print("\n")
-
 
     def unknown(self):
         print('Команда не опознана. Для подсказки наберите help')
@@ -51,3 +54,15 @@ class Menu:
 
     def getId(self):
         return input('Введите ID заметки: ')
+
+    def getDate(self) -> datetime.date:
+        while True:
+            try:
+                date_str = input("в формате дд-мм-гг ")
+                date_str = datetime.datetime.strptime(date_str, '%d-%m-%y').strftime('%Y-%m-%d')
+                year, month, day = map(int, date_str.split('-'))
+                return datetime.date(year, month, day)
+                break
+            except Exception as err:
+                print(Exception, err)
+                print("Повторите ввод")
